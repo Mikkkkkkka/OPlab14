@@ -1,5 +1,7 @@
 .idea/
 .vscode/
 cmake-build-debug/
+out/
 CMakeLists.txt
 **.log
+**.exe

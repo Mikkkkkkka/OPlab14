@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
 
         createBmp(outputFileBuffer);
         time_t time2Wait = time(NULL) + parameters.dump_freq;
-//        while (time(NULL) < time2Wait);
+        while (time(NULL) < time2Wait);
     }
 
     fclose(inp);

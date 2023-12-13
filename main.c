@@ -21,13 +21,11 @@ int main(int argc, char* argv[]) {
     // Проверяем существует ли заданный директорий
     char dirname[0x100];
     snprintf(dirname, sizeof(dirname), "%s", parameters.output);
-    DIR* dir = opendir(dirname);
-    if ((errno == ENOENT) && (mkdir(dirname) == -1)) {
-        closedir(dir);
+    int dir = mkdir(dirname);
+    if (dir == -1) {
         printf("ERROR: output directory path is invalid\n");
         exit(0);
     }
-    closedir(dir);
 
     // Принимаем параметры --max_iter и --dump_freq
     for (int i = 3; i < argc; i++) {
@@ -94,7 +92,7 @@ int main(int argc, char* argv[]) {
 
         createBmp(outputFileBuffer);
         time_t time2Wait = time(NULL) + parameters.dump_freq;
-        while (time(NULL) < time2Wait);
+//        while (time(NULL) < time2Wait);
     }
 
     fclose(inp);

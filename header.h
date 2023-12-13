@@ -7,7 +7,7 @@
 #include <math.h>
 #include <malloc.h>
 #include <string.h>
-#include <dirent.h>
+#include <dir.h>
 #include <time.h>
 
 // Глобальные структуры

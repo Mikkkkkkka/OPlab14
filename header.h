@@ -24,6 +24,7 @@ typedef struct {
     int pixelArrayBegin;
     int width;
     int height;
+    int bytesPerPixel;
     unsigned char* pixelArray;
     int pixelArrayLength;
     int slashNLength;
@@ -36,8 +37,8 @@ extern BmpTemplate bmpTemplate;
 // "bmpTemplateFuncs.c" (Функции взаимодействующие с глобальной bmpTemplate)
 int byteSectionValue(const unsigned char* fileData, int start, int size);
 unsigned char* dataSlice(const unsigned char* fileData, int start, int size);
-int slashNLength(int width);
-int calculatePixelArrayLength(int width, int height);
+int slashNLength(int width, int pixelSize);
+int calculatePixelArrayLength(int width, int height, int pixelSize);
 unsigned char* formatToByteArray(int value, int size);
 
 // "boolFuncs.c" (Создание модели, преобразование модели в формат BITMAPPIXELARRAY)

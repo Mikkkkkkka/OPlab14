@@ -40,12 +40,12 @@ void createBmp(char* opFileName) {
     // Перезапись ширины, высоты, и инфы про палитру
     rewriteData(infoHeader, formatToByteArray(bmpTemplate.width, 4), 4, 4);
     rewriteData(infoHeader, formatToByteArray(bmpTemplate.height, 4), 8, 4);
+    rewriteData(infoHeader, formatToByteArray(bmpTemplate.bytesPerPixel*8, 2), 14, 2);
     rewriteData(infoHeader, formatToByteArray(bmpTemplate.colorPaletteSize, 4), 32, 4);
     rewriteData(infoHeader, formatToByteArray(bmpTemplate.colorPaletteLength, 4), 36, 4);
 
     // BITMAPPIXELARRAY
-    unsigned char* pixelArray = (unsigned char*)calloc(bmpTemplate.pixelArrayLength, sizeof(char));
-    rewriteData(pixelArray, bmpTemplate.pixelArray, 0, bmpTemplate.pixelArrayLength);
+    // bmpTemplate.pixelArray
 
 
     FILE* output = fopen(opFileName, "wb");
@@ -55,6 +55,6 @@ void createBmp(char* opFileName) {
     }
     fwrite(fileHeader, sizeof(fileHeader), 1, output);
     fwrite(infoHeader, sizeof(infoHeader), 1, output);
-    fwrite(pixelArray, sizeof(char) * bmpTemplate.pixelArrayLength, 1, output);
+    fwrite(bmpTemplate.pixelArray, sizeof(char) * bmpTemplate.pixelArrayLength, 1, output);
     fclose(output);
 }

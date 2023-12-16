@@ -5,6 +5,9 @@ ConsoleParameters parameters;
 BmpTemplate bmpTemplate;
 
 int main(int argc, char* argv[]) {
+    
+    int nameBufferSize = 0x100; 
+    unsigned long long fileBufferSize = 0x10000;
 
     // Проверяем количество аргументов
     if (argc < 3) {
@@ -19,10 +22,10 @@ int main(int argc, char* argv[]) {
     parameters.dump_freq = 1;
 
     // Проверяем существует ли заданный директорий
-    char dirname[0x100];
+    char dirname[nameBufferSize];
     snprintf(dirname, sizeof(dirname), "%s", parameters.output);
     int dir = mkdir(dirname);
-    if (dir == -1) {
+    if (errno == ENOENT) {
         printf("ERROR: output directory path is invalid\n");
         exit(0);
     }
@@ -46,7 +49,7 @@ int main(int argc, char* argv[]) {
     }
 
     //  Открываем исходный файл
-    char fileNameBuffer[0x100];
+    char fileNameBuffer[nameBufferSize];
     snprintf(fileNameBuffer, sizeof(fileNameBuffer), "%s", parameters.input);
     FILE* inp = fopen(fileNameBuffer, "r");
     if (inp == NULL) {
@@ -55,27 +58,37 @@ int main(int argc, char* argv[]) {
     }
 
     // Читаем исходный файл
-    unsigned long long bufferSize = 100000;
-    unsigned char fileData[bufferSize];
-    fread(&fileData, sizeof(char), bufferSize, inp);
+    unsigned char fileData[fileBufferSize];
+    fread(&fileData, sizeof(char), fileBufferSize, inp);
+//    consoleLogUCa(fileData, bufferSize, 16);
 
-    // Параметры глобальной vmpTemplate
+    // Размер входного файла
     bmpTemplate.fileSize = byteSectionValue(fileData, 2, 4);
+
+    // Выдаём ошибку если файл слишком большой
+    if (bmpTemplate.fileSize > fileBufferSize) {
+        printf("ERROR: input file is too large\n");
+        exit(0);
+    }
+
+    // Прочие параметры глобальной vmpTemplate
     bmpTemplate.pixelArrayBegin = byteSectionValue(fileData, 10, 4);
     bmpTemplate.width = byteSectionValue(fileData, 18, 4);
     bmpTemplate.height = byteSectionValue(fileData, 22, 4);
+    bmpTemplate.bytesPerPixel = byteSectionValue(fileData, 28, 2) / 8;
     bmpTemplate.colorPaletteSize = byteSectionValue(fileData, 46, 4);
     bmpTemplate.colorPaletteLength = byteSectionValue(fileData, 50, 4);
-    bmpTemplate.pixelArrayLength = calculatePixelArrayLength(bmpTemplate.width, bmpTemplate.height);
-    bmpTemplate.slashNLength = slashNLength(bmpTemplate.width);
+    bmpTemplate.slashNLength = slashNLength(bmpTemplate.width, bmpTemplate.bytesPerPixel);
+    bmpTemplate.pixelArrayLength = calculatePixelArrayLength(bmpTemplate.width, bmpTemplate.height, bmpTemplate.bytesPerPixel);
     bmpTemplate.pixelArray = dataSlice(fileData, bmpTemplate.pixelArrayBegin, bmpTemplate.pixelArrayLength);
 
+//    consoleLogUCa(bmpTemplate.pixelArray, bmpTemplate.pixelArrayLength, bmpTemplate.width+bmpTemplate.slashNLength);
 
-    // Создаём
+    // Создаём модель
     bool** stepState = createModel();
-    // consoleLogBa(stepState, bmpTemplate.width, bmpTemplate.height);
+//    consoleLogBa(stepState, bmpTemplate.width, bmpTemplate.height);
 
-    char outputFileBuffer[0x100];
+    char outputFileBuffer[nameBufferSize];
     unsigned stepNum = 0;
     while (true) {
 
@@ -85,14 +98,12 @@ int main(int argc, char* argv[]) {
         printf("%s\n", outputFileBuffer);
 
         gameOfLife(stepState);
-        //        consoleLogBa(stepState, bmpTemplate.width, bmpTemplate.height);
 
         bmpTemplate.pixelArray = createPixelArray(stepState);
-        //        consoleLogUCa(bmpTemplate.pixelArray, bmpTemplate.pixelArrayLength, 3*bmpTemplate.width+bmpTemplate.slashNLength);
 
         createBmp(outputFileBuffer);
         time_t time2Wait = time(NULL) + parameters.dump_freq;
-        while (time(NULL) < time2Wait);
+//        while (time(NULL) < time2Wait);
     }
 
     fclose(inp);

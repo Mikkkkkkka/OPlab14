@@ -11,13 +11,13 @@ int byteSectionValue(const unsigned char* fileData, int start, int size) {
 }
 
 
-int slashNLength(int width) {
-    return width % 4;
+int slashNLength(int width, int pixelSize) {
+    return (width * pixelSize) % 4;
 }
 
 
-int calculatePixelArrayLength(int width, int height) {
-    return height * (width * 3 + slashNLength(width));
+int calculatePixelArrayLength(int width, int height, int pixelSize) {
+    return height * (width * pixelSize + slashNLength(width, pixelSize));
 }
 
 
@@ -25,7 +25,7 @@ unsigned char* dataSlice(const unsigned char* fileData, int start, int size) {
 
     unsigned char* slicedData = (unsigned char*)calloc(size, sizeof(char));
     if (slicedData == NULL) {
-        printf("\nMemory was not allocated!");
+        printf("\nDataSlice error: Memory was not allocated!");
         exit(1);
     }
 

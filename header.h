@@ -9,6 +9,7 @@
 #include <string.h>
 #include <dir.h>
 #include <time.h>
+#include <unistd.h>
 
 // Глобальные структуры
 typedef struct {

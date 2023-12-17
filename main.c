@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
 
         createBmp(outputFileBuffer);
         time_t time2Wait = time(NULL) + parameters.dump_freq;
-        //        while (time(NULL) < time2Wait);
+        sleep(parameters.dump_freq * 0.001);
     }
 
     fclose(inp);
@@ -111,6 +111,6 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-// g++ -o app *.c *.h
+// g++ -o main *.c *.h
 
-// .\main.exe inputfiles\h.bmp out --max_iter 50 --dump_freq 1
+// .\main.exe inputfiles\h.bmp out --max_iter 500 --dump_freq 1

@@ -13,7 +13,6 @@ bool** createModel() {
         if (i == bmpTemplate.width) { i += bmpTemplate.slashNLength; }
         field[i / pixelArrayLine][(i % (pixelArrayLine)) / bmpTemplate.bytesPerPixel] = (bmpTemplate.pixelArray[i] != 0xFF);
     }
-    consoleLogBa(field, bmpTemplate.width, bmpTemplate.height);
 
     return field; // LEAK!!
 }

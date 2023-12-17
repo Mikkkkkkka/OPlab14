@@ -5,9 +5,9 @@ ConsoleParameters parameters;
 BmpTemplate bmpTemplate;
 
 int main(int argc, char* argv[]) {
-    
-    int nameBufferSize = 0x100; 
-    unsigned long long fileBufferSize = 0x10000;
+
+    int nameBufferSize = 0x100;
+    unsigned long long fileBufferSize = 0x100000;
 
     // Проверяем количество аргументов
     if (argc < 3) {
@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
     // Проверяем существует ли заданный директорий
     char dirname[nameBufferSize];
     snprintf(dirname, sizeof(dirname), "%s", parameters.output);
-    int dir = mkdir(dirname);
+    mkdir(dirname);
     if (errno == ENOENT) {
         printf("ERROR: output directory path is invalid\n");
         exit(0);
@@ -60,9 +60,9 @@ int main(int argc, char* argv[]) {
     // Читаем исходный файл
     unsigned char fileData[fileBufferSize];
     fread(&fileData, sizeof(char), fileBufferSize, inp);
-//    consoleLogUCa(fileData, bufferSize, 16);
+    //    consoleLogUCa(fileData, bufferSize, 16);
 
-    // Размер входного файла
+        // Размер входного файла
     bmpTemplate.fileSize = byteSectionValue(fileData, 2, 4);
 
     // Выдаём ошибку если файл слишком большой
@@ -82,11 +82,11 @@ int main(int argc, char* argv[]) {
     bmpTemplate.pixelArrayLength = calculatePixelArrayLength(bmpTemplate.width, bmpTemplate.height, bmpTemplate.bytesPerPixel);
     bmpTemplate.pixelArray = dataSlice(fileData, bmpTemplate.pixelArrayBegin, bmpTemplate.pixelArrayLength);
 
-//    consoleLogUCa(bmpTemplate.pixelArray, bmpTemplate.pixelArrayLength, bmpTemplate.width+bmpTemplate.slashNLength);
+    //    consoleLogUCa(bmpTemplate.pixelArray, bmpTemplate.pixelArrayLength, bmpTemplate.width+bmpTemplate.slashNLength);
 
-    // Создаём модель
+        // Создаём модель
     bool** stepState = createModel();
-//    consoleLogBa(stepState, bmpTemplate.width, bmpTemplate.height);
+    //    consoleLogBa(stepState, bmpTemplate.width, bmpTemplate.height);
 
     char outputFileBuffer[nameBufferSize];
     unsigned stepNum = 0;
@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
 
         createBmp(outputFileBuffer);
         time_t time2Wait = time(NULL) + parameters.dump_freq;
-//        while (time(NULL) < time2Wait);
+        //        while (time(NULL) < time2Wait);
     }
 
     fclose(inp);
@@ -113,4 +113,4 @@ int main(int argc, char* argv[]) {
 
 // g++ -o app *.c *.h
 
-// .\app.exe .inputfiles\collision.bmp out --max_iter 50 --dump_freq 1
+// .\main.exe inputfiles\h.bmp out --max_iter 50 --dump_freq 1
